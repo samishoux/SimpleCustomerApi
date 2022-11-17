@@ -23,11 +23,11 @@ public interface IDataService<T>
     public Task<int> CreateAsync(T data);
 
     /// <summary>
-    /// Delete object
+    /// Update the object
     /// </summary>
     /// <param name="data">Data of the object</param>
     /// <returns>number of change saved</returns>
-    public Task<int> DeleteAsync(T data);
+    public Task<int> UpdateAsync(T data);
 
     /// <summary>
     /// Delete object

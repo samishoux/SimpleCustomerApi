@@ -30,18 +30,20 @@ public class CustomerService: IDataService<Customer>
         return await _context.SaveChangesAsync();;
     }
 
-    public async Task<int> DeleteAsync(Customer data)
+    public async Task<int> UpdateAsync(Customer data)
     {
-        _context.Remove(data);
+        _context.Update(data);
         return await _context.SaveChangesAsync();
     }
 
     public async Task<int> DeleteAsync(Guid id)
     {
-        Customer? customer = await GetAsync(id);
-        if (customer is null)
-            return 0;
-        
+        Customer customer = new Customer()
+        {
+            Id = id
+        };
+
+        _context.Attach(customer);
         _context.Remove(customer);
         return await _context.SaveChangesAsync();
     }

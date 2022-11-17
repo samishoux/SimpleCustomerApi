@@ -27,8 +27,8 @@ public class CustomersController: ControllerBase
         IEnumerable<Customer> customers = await _customerService.GetAllAsync();
         var response = _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         if (response is null)
-            return BadRequest();
-        
+            return BadRequest("Could not convert response back");
+
         return Ok(response);
     }
 
@@ -45,18 +45,18 @@ public class CustomersController: ControllerBase
 
         var response = _mapper.Map<CustomerResponseDto>(customer);
         if (response is null)
-            return BadRequest();
-        
+            return BadRequest("Could not convert response back");
+
         return Ok(response);
     }
 
     [HttpPost]
-    [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Create([FromBody] CustomerRequestDto customerResponseDto)
+    public async Task<IActionResult> Create([FromBody] CustomerRequestDto customerRequestDto)
     {
-        Customer? customer = _mapper.Map<Customer>(customerResponseDto);
+        Customer? customer = _mapper.Map<Customer>(customerRequestDto);
         
         if (customer is null)
             return BadRequest();
@@ -66,6 +66,49 @@ public class CustomersController: ControllerBase
             return BadRequest("No Customer was created");
         
         var response = _mapper.Map<CustomerResponseDto>(customer);
+        if (response is null)
+            return BadRequest("Could not convert response back");
+        
+        var location = Url.Action(nameof(Get), new { id = response.Id }) ?? $"/{response.Id}";
+        return Created(location, response);
+    }
+
+
+    [HttpPut]
+    [Route("{id:guid}")]
+    [ProducesResponseType(typeof(CustomerResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(Guid id, [FromBody] CustomerRequestDto customerRequestDto)
+    {
+        Customer? customer = await _customerService.GetAsync(id);
+        if (customer is null)
+            return NotFound();
+
+        _mapper.Map(customerRequestDto, customer);
+
+        var numberOfCustomerUpdated = await _customerService.UpdateAsync(customer);
+        if (numberOfCustomerUpdated == 0)
+            return BadRequest("No Customer was updated");
+
+        var response = _mapper.Map<CustomerResponseDto>(customer);
+        if(response is null)
+            return BadRequest("Could not convert response back");
+
         return Ok(response);
+    }
+
+    [HttpDelete]
+    [Route("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var numberOfCustomerDeleted = await _customerService.DeleteAsync(id);
+
+        if (numberOfCustomerDeleted == 0)
+            return NotFound();
+            
+        return Ok();
     }
 }
