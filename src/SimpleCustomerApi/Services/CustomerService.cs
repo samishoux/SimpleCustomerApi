@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SimpleCustomerApi.Data;
+using SimpleCustomerApi.Filters;
 using SimpleCustomerApi.Models;
 
 namespace SimpleCustomerApi.Services;
@@ -19,9 +20,15 @@ public class CustomerService: IDataService<Customer>
         return await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
     }
 
-    public async Task<IEnumerable<Customer>> GetAllAsync()
+    public async Task<IEnumerable<Customer>> GetAllAsync(PaginationFilter? filter = null)
     {
-        return await _context.Customers.ToListAsync();
+        if(filter is null)
+            return await _context.Customers.ToListAsync();
+        
+        return await _context.Customers
+            .Skip(filter.Skip)
+            .Take(filter.PageSize)
+            .ToListAsync();
     }
 
     public async Task<int> CreateAsync(Customer data)

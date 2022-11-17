@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SimpleCustomerApi.Dto;
+using SimpleCustomerApi.Filters;
 using SimpleCustomerApi.Models;
 using SimpleCustomerApi.Services;
 
@@ -24,7 +25,10 @@ public class CustomersController: ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll([FromQuery] PaginationQueryDto paginationQueryDto)
     {
-        IEnumerable<Customer> customers = await _customerService.GetAllAsync();
+        PaginationFilter paginationFilter = _mapper.Map<PaginationFilter>(paginationQueryDto);
+        
+        IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter);
+        
         var response = _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         if (response is null)
             return BadRequest("Could not convert response back");

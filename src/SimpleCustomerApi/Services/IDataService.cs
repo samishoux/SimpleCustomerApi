@@ -1,4 +1,6 @@
-﻿namespace SimpleCustomerApi.Services;
+﻿using SimpleCustomerApi.Filters;
+
+namespace SimpleCustomerApi.Services;
 
 public interface IDataService<T>
 {
@@ -13,7 +15,7 @@ public interface IDataService<T>
     /// Get all object
     /// </summary>
     /// <returns></returns>
-    public Task<IEnumerable<T>> GetAllAsync();
+    public Task<IEnumerable<T>> GetAllAsync(PaginationFilter? filter = null);
 
     /// <summary>
     /// Create object
