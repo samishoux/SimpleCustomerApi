@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using SimpleCustomerApi.Dto;
+using SimpleCustomerApi.Dto.Customer;
 using SimpleCustomerApi.Filters;
 using SimpleCustomerApi.Models;
 using SimpleCustomerApi.Services;
@@ -9,12 +10,12 @@ namespace SimpleCustomerApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CustomersController: ControllerBase
+public class CustomersController : ControllerBase
 {
-    private readonly IDataService<Customer> _customerService;
+    private readonly ICustomerService _customerService;
     private readonly IMapper _mapper;
 
-    public CustomersController(IDataService<Customer> customerService, IMapper mapper)
+    public CustomersController(ICustomerService customerService, IMapper mapper)
     {
         _customerService = customerService;
         _mapper = mapper;
@@ -23,12 +24,14 @@ public class CustomersController: ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CustomerResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll([FromQuery] PaginationQueryDto paginationQueryDto)
+    public async Task<IActionResult> GetAll([FromQuery] PaginationQueryDto paginationQueryDto,
+        [FromQuery] CustomerQueryDto customerQueryDto)
     {
         PaginationFilter paginationFilter = _mapper.Map<PaginationFilter>(paginationQueryDto);
-        
-        IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter);
-        
+        CustomerFilter customerFilter = _mapper.Map<CustomerFilter>(customerQueryDto);
+
+        IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter, customerFilter);
+
         var response = _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         if (response is null)
             return BadRequest("Could not convert response back");
@@ -61,19 +64,19 @@ public class CustomersController: ControllerBase
     public async Task<IActionResult> Create([FromBody] CustomerRequestDto customerRequestDto)
     {
         Customer? customer = _mapper.Map<Customer>(customerRequestDto);
-        
+
         if (customer is null)
             return BadRequest();
-        
+
         var customerResponse = await _customerService.CreateAsync(customer);
         if (customerResponse == 0)
             return BadRequest("No Customer was created");
-        
+
         var response = _mapper.Map<CustomerResponseDto>(customer);
         if (response is null)
             return BadRequest("Could not convert response back");
-        
-        var location = Url.Action(nameof(Get), new { id = response.Id }) ?? $"/{response.Id}";
+
+        var location = Url.Action(nameof(Get), new {id = response.Id}) ?? $"/{response.Id}";
         return Created(location, response);
     }
 
@@ -96,7 +99,7 @@ public class CustomersController: ControllerBase
             return BadRequest("No Customer was updated");
 
         var response = _mapper.Map<CustomerResponseDto>(customer);
-        if(response is null)
+        if (response is null)
             return BadRequest("Could not convert response back");
 
         return Ok(response);
@@ -112,7 +115,7 @@ public class CustomersController: ControllerBase
 
         if (numberOfCustomerDeleted == 0)
             return NotFound();
-            
+
         return Ok();
     }
 }

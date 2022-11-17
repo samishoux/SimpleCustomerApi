@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace SimpleCustomerApi.Dto;
+﻿namespace SimpleCustomerApi.Dto.Customer;
 
 public class CustomerResponseDto: CustomerDto
 {

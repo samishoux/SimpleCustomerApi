@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SimpleCustomerApi.Dto;
+using SimpleCustomerApi.Dto.Customer;
 using SimpleCustomerApi.Filters;
 using SimpleCustomerApi.Models;
 
@@ -12,5 +13,6 @@ public class AutoMapperProfiles: Profile
         CreateMap<Customer, CustomerResponseDto>();
         CreateMap<CustomerRequestDto, Customer>();
         CreateMap<PaginationQueryDto, PaginationFilter>();
+        CreateMap<CustomerQueryDto, CustomerFilter>();
     }
 }

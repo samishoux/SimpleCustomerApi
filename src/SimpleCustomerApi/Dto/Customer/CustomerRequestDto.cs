@@ -1,4 +1,4 @@
-﻿namespace SimpleCustomerApi.Dto;
+﻿namespace SimpleCustomerApi.Dto.Customer;
 
 public class CustomerRequestDto : CustomerDto
 {

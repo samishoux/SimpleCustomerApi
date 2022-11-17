@@ -6,7 +6,7 @@ using SimpleCustomerApi.Models;
 
 namespace SimpleCustomerApi.Services;
 
-public class CustomerService: IDataService<Customer>
+public class CustomerService : ICustomerService
 {
     private readonly DataContext _context;
 
@@ -14,7 +14,7 @@ public class CustomerService: IDataService<Customer>
     {
         _context = context;
     }
-    
+
     public async Task<Customer?> GetAsync(Guid id)
     {
         return await _context.Customers.FirstOrDefaultAsync(x => x.Id == id);
@@ -22,9 +22,9 @@ public class CustomerService: IDataService<Customer>
 
     public async Task<IEnumerable<Customer>> GetAllAsync(PaginationFilter? filter = null)
     {
-        if(filter is null)
+        if (filter is null)
             return await _context.Customers.ToListAsync();
-        
+
         return await _context.Customers
             .Skip(filter.Skip)
             .Take(filter.PageSize)
@@ -34,7 +34,8 @@ public class CustomerService: IDataService<Customer>
     public async Task<int> CreateAsync(Customer data)
     {
         await _context.Customers.AddAsync(data);
-        return await _context.SaveChangesAsync();;
+        return await _context.SaveChangesAsync();
+        ;
     }
 
     public async Task<int> UpdateAsync(Customer data)
@@ -54,4 +55,24 @@ public class CustomerService: IDataService<Customer>
         _context.Remove(customer);
         return await _context.SaveChangesAsync();
     }
+
+    public async Task<IEnumerable<Customer>> GetAllAsync(PaginationFilter? paginationFilter = null,
+        CustomerFilter? customerFilter = null)
+    {
+        IQueryable<Customer> partialQuery = _context.Customers;
+        if (customerFilter is not null)
+        {
+            partialQuery = partialQuery.Where(x => x.Enabled == customerFilter.Enabled);
+        }
+        
+        if (paginationFilter is not null)
+        {
+            partialQuery = partialQuery
+                .Skip(paginationFilter.Skip)
+                .Take(paginationFilter.PageSize);
+        }
+        
+        return await partialQuery.ToListAsync();
+    }
+    
 }
