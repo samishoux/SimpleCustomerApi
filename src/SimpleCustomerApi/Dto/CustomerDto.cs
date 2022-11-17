@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SimpleCustomerApi.Models;
+namespace SimpleCustomerApi.Dto;
 
-public class Customer: BaseModel
+public abstract class CustomerDto
 {
     public string FirstName { get; set; }
-
     public string LastName { get; set; }
-
-    public string Email { get; set; }
-
+    [EmailAddress] public string Email { get; set; }
     public bool Enabled { get; set; }
 }
