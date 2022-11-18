@@ -6,5 +6,17 @@ public class PaginationFilter
     public int PageSize { get; set; }
     
     
-    public int Skip => (PageNumber - 1) * PageSize;
+    public int Skip
+    {
+        get
+        {
+            if (PageNumber < 1)
+                return 0;
+            
+            if (PageSize < 1)
+                return 0;
+            
+            return (PageNumber - 1) * PageSize;
+        }
+    }
 }

@@ -33,8 +33,6 @@ public class CustomersController : ControllerBase
         IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter, customerFilter);
 
         var response = _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
-        if (response is null)
-            return BadRequest("Could not convert response back");
 
         return Ok(response);
     }
