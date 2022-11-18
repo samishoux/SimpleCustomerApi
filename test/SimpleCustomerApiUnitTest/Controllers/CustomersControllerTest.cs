@@ -125,21 +125,54 @@ public class CustomersControllerTest
     public async Task GetAll_ShouldReturnValidCustomers_WhenRequestIsValid()
     {
         // Arrange
+        PaginationQueryDto paginationQueryDto = new();
+        CustomerQueryDto customerQueryDto = new()
+        {
+            Enabled = true
+        };
         PaginationFilter paginationFilter = new();
-        CustomerFilter customerFilter = new();
+        CustomerFilter customerFilter = new()
+        {
+            Enabled = true
+        };
         List<Customer> customers = new();
         List<CustomerResponseDto> customerDtoResponse = new();
+        _mapper.Map<PaginationFilter>(Arg.Any<PaginationQueryDto>()).Returns(paginationFilter);
+        _mapper.Map<CustomerFilter>(Arg.Any<CustomerQueryDto>()).Returns(customerFilter);
         _mapper.Map<IEnumerable<CustomerResponseDto>>(customers).Returns(customerDtoResponse);
         _customerService.GetAllAsync(paginationFilter, customerFilter).Returns(customers);
 
         // Act
-        var response = await _sut.GetAll(new PaginationQueryDto(), new CustomerQueryDto());
+        var response = await _sut.GetAll(paginationQueryDto, customerQueryDto);
 
         // Assert
         var okObjectResult = response.Should().BeAssignableTo<OkObjectResult>().Subject;
         var responseDto = okObjectResult.Value.Should().BeAssignableTo<IEnumerable<CustomerResponseDto>>().Subject;
+        await _customerService.Received(1).GetAllAsync(Arg.Any<PaginationFilter>(), Arg.Is<CustomerFilter>(x => x != null && x.Enabled));
+        _mapper.Received(1).Map<CustomerFilter>(Arg.Any<CustomerQueryDto>());
         responseDto.Should().NotBeNull();
         responseDto.Should().BeEmpty();
+    }
+    
+    [Fact]
+    public async Task GetAll_ShouldReceiveNullableCustomerFilter_WhenCustomerQueryDtoEnabledWasNull()
+    {
+        // Arrange
+        PaginationQueryDto paginationQueryDto = new();
+        PaginationFilter paginationFilter = new();
+        CustomerQueryDto customerQueryDto = new CustomerQueryDto()
+        {
+            Enabled = null
+        };
+        List<Customer> customers = new();
+        _customerService.GetAllAsync(paginationFilter).Returns(customers);
+        _mapper.Map<PaginationFilter>(Arg.Any<PaginationQueryDto>()).Returns(paginationFilter);
+
+        // Act
+        await _sut.GetAll(new PaginationQueryDto(), new CustomerQueryDto());
+
+        // Assert
+        await _customerService.Received(1).GetAllAsync(Arg.Any<PaginationFilter>(), Arg.Is<CustomerFilter?>(x => x == null));
     }
 
     #endregion

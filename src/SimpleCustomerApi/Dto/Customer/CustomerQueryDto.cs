@@ -2,5 +2,5 @@
 
 public class CustomerQueryDto
 {
-    public bool Enabled { get; set; }
+    public bool? Enabled { get; set; }
 }

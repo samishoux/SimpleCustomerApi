@@ -25,10 +25,12 @@ public class CustomersController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CustomerResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll([FromQuery] PaginationQueryDto paginationQueryDto,
-        [FromQuery] CustomerQueryDto customerQueryDto)
+        [FromQuery] CustomerQueryDto? customerQueryDto)
     {
         PaginationFilter paginationFilter = _mapper.Map<PaginationFilter>(paginationQueryDto);
-        CustomerFilter customerFilter = _mapper.Map<CustomerFilter>(customerQueryDto);
+        CustomerFilter? customerFilter = null;
+        if(customerQueryDto?.Enabled is not null)
+            customerFilter = _mapper.Map<CustomerFilter>(customerQueryDto);
 
         IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter, customerFilter);
 
