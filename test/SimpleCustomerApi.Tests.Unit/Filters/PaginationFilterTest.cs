@@ -2,7 +2,7 @@
 using SimpleCustomerApi.Filters;
 using Xunit;
 
-namespace SimpleCustomerApiUnitTest.Filter;
+namespace SimpleCustomerApi.Tests.Unit.Filters;
 
 public class PaginationFilterTest
 {

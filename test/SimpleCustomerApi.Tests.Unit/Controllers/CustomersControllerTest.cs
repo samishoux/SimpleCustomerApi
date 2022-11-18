@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Abstractions;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using SimpleCustomerApi.Controllers;
@@ -19,7 +14,7 @@ using SimpleCustomerApi.Models;
 using SimpleCustomerApi.Services;
 using Xunit;
 
-namespace SimpleCustomerApiUnitTest.Controllers;
+namespace SimpleCustomerApi.Tests.Unit.Controllers;
 
 public class CustomersControllerTest
 {
