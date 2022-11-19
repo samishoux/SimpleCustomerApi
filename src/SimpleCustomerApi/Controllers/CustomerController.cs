@@ -10,12 +10,12 @@ namespace SimpleCustomerApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class CustomersController : ControllerBase
+public class CustomerController : ControllerBase
 {
     private readonly ICustomerService _customerService;
     private readonly IMapper _mapper;
 
-    public CustomersController(ICustomerService customerService, IMapper mapper)
+    public CustomerController(ICustomerService customerService, IMapper mapper)
     {
         _customerService = customerService;
         _mapper = mapper;
