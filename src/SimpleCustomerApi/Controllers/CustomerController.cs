@@ -25,12 +25,17 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<CustomerResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll([FromQuery] PaginationQueryDto paginationQueryDto,
-        [FromQuery] CustomerQueryDto? customerQueryDto)
+        [FromQuery] CustomerQueryDto customerQueryDto)
     {
-        PaginationFilter paginationFilter = _mapper.Map<PaginationFilter>(paginationQueryDto);
+        PaginationFilter? paginationFilter = null;
         CustomerFilter? customerFilter = null;
-        if(customerQueryDto?.Enabled is not null)
+        if(customerQueryDto.Enabled is not null)
             customerFilter = _mapper.Map<CustomerFilter>(customerQueryDto);
+        
+        if(paginationQueryDto.PageSize is not null)
+            paginationFilter = _mapper.Map<PaginationFilter>(paginationQueryDto);
+        
+        
 
         IEnumerable<Customer> customers = await _customerService.GetAllAsync(paginationFilter, customerFilter);
 
@@ -111,8 +116,11 @@ public class CustomerController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
+        var customerExist = await _customerService.ExistAsync(id);
+        if (!customerExist)
+            return NotFound();
+        
         var numberOfCustomerDeleted = await _customerService.DeleteAsync(id);
-
         if (numberOfCustomerDeleted == 0)
             return NotFound();
 

@@ -27,7 +27,7 @@ public class CustomerService : ICustomerService
 
         return await _context.Customers
             .Skip(filter.Skip)
-            .Take(filter.PageSize)
+            .Take(filter.Take)
             .ToListAsync();
     }
 
@@ -56,6 +56,11 @@ public class CustomerService : ICustomerService
         return await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> ExistAsync(Guid id)
+    {
+        return await _context.Customers.AnyAsync(x => x.Id == id);
+    }
+
     public async Task<IEnumerable<Customer>> GetAllAsync(PaginationFilter? paginationFilter = null,
         CustomerFilter? customerFilter = null)
     {
@@ -64,15 +69,14 @@ public class CustomerService : ICustomerService
         {
             partialQuery = partialQuery.Where(x => x.Enabled == customerFilter.Enabled);
         }
-        
+
         if (paginationFilter is not null)
         {
             partialQuery = partialQuery
                 .Skip(paginationFilter.Skip)
-                .Take(paginationFilter.PageSize);
+                .Take(paginationFilter.Take);
         }
-        
+
         return await partialQuery.ToListAsync();
     }
-    
 }

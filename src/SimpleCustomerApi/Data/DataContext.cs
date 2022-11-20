@@ -6,17 +6,14 @@ namespace SimpleCustomerApi.Data;
 
 public class DataContext : DbContext
 {
-    private readonly IConfiguration _configuration;
 
-    public DataContext(IConfiguration configuration)
+    public DataContext(DbContextOptions options): base(options)
     {
-        _configuration = configuration;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        optionsBuilder.UseSqlite(_configuration.GetConnectionString("WebApiDatabase"));
-        base.OnConfiguring(optionsBuilder);
+        modelBuilder.Seed();
     }
 
     public DbSet<Customer> Customers { get; set; }
@@ -35,7 +32,7 @@ public class DataContext : DbContext
 
     private void AddTimestamp()
     {
-        var now = DateTime.Now;
+        var now = DateTime.UtcNow;
         IEnumerable<EntityEntry> trackedEntities = ChangeTracker.Entries();
         foreach (var entry in trackedEntities)
         {

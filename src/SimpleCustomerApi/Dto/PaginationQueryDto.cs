@@ -7,8 +7,6 @@ public class PaginationQueryDto
 {
     public PaginationQueryDto()
     {
-        PageNumber = 1;
-        PageSize = 100;
     }
 
     public PaginationQueryDto(int pageNumber, int pageSize)
@@ -18,19 +16,9 @@ public class PaginationQueryDto
 
     }
 
-    /// <summary>
-    /// Used to get the page number for a given query.
-    /// </summary>
-    /// <remarks>
-    /// Default = 1
-    /// </remarks>
-    public int PageNumber { get; set; }
+   
+    public int? PageNumber { get; set; }
     
-    /// <summary>
-    /// Used to get the amount of data to get back
-    /// </summary>
-    /// <remarks>
-    ///  Default = 100
-    /// </remarks>
-    public int PageSize { get; set; }
+    
+    public int? PageSize { get; set; }
 }

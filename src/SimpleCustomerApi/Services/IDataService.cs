@@ -37,5 +37,12 @@ public interface IDataService<T>
     /// <param name="id">Guid of the object</param>
     /// <returns>number of change saved</returns>
     public Task<int> DeleteAsync(Guid id);
+    
+    /// <summary>
+    /// Check if object exist
+    /// </summary>
+    /// <param name="id">Guid of the object</param>
+    /// <returns></returns>
+    public Task<bool> ExistAsync(Guid id);
 
 }

@@ -2,13 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E983C087-668A-4138-ADB0-8655233CF77A}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F8B2285E-1955-42B1-84D0-4B839EE89E47}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F8B2285E-1955-42B1-84D0-4B839EE89E47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCustomerApi", "src\SimpleCustomerApi\SimpleCustomerApi.csproj", "{97BC228E-9A6C-4E1A-9793-26A740726D1C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCustomerApi.Tests.Unit", "test\SimpleCustomerApi.Tests.Unit\SimpleCustomerApi.Tests.Unit.csproj", "{6D20C282-3059-4D63-BA5D-4570FE619362}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCustomerApi.Tests.Integration", "SimpleCustomerApi.Tests.Integration\SimpleCustomerApi.Tests.Integration.csproj", "{933ECE57-6F8C-45BE-AAAA-AE66E9BF926D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleCustomerApi.Tests.Integration", "test\SimpleCustomerApi.Tests.Integration\SimpleCustomerApi.Tests.Integration.csproj", "{933ECE57-6F8C-45BE-AAAA-AE66E9BF926D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

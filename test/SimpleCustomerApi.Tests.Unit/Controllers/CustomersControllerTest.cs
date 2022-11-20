@@ -64,12 +64,7 @@ public class CustomersControllerTest
         var okObjectResult = response.Should().BeAssignableTo<OkObjectResult>().Subject;
         var responseDto = okObjectResult.Value.Should().BeAssignableTo<CustomerResponseDto>().Subject;
         responseDto.Should().NotBeNull();
-        responseDto.Id.Should().Be(id);
-        responseDto.FirstName.Should().Be(customer.FirstName);
-        responseDto.LastName.Should().Be(customer.LastName);
-        responseDto.Email.Should().Be(customer.Email);
-        responseDto.CreatedAt.Should().Be(customer.CreatedAt);
-        responseDto.UpdatedAt.Should().Be(customer.UpdatedAt);
+        responseDto.Should().BeEquivalentTo(customer);
         await _customerService.Received(1).GetAsync(Arg.Is(id));
     }
 
@@ -114,7 +109,6 @@ public class CustomersControllerTest
         var responseDto = badRequestObjectResult.Value.Should().BeAssignableTo<string>().Subject;
         responseDto.Should().Be("Could not convert response back");
         await _customerService.Received(1).GetAsync(Arg.Is(id));
-
     }
 
     #endregion
@@ -125,7 +119,11 @@ public class CustomersControllerTest
     public async Task GetAll_ShouldReturnValidCustomers_WhenRequestIsValid()
     {
         // Arrange
-        PaginationQueryDto paginationQueryDto = new();
+        PaginationQueryDto paginationQueryDto = new()
+        {
+            PageNumber = 1,
+            PageSize = 100
+        };
         CustomerQueryDto customerQueryDto = new()
         {
             Enabled = true
@@ -148,12 +146,13 @@ public class CustomersControllerTest
         // Assert
         var okObjectResult = response.Should().BeAssignableTo<OkObjectResult>().Subject;
         var responseDto = okObjectResult.Value.Should().BeAssignableTo<IEnumerable<CustomerResponseDto>>().Subject;
-        await _customerService.Received(1).GetAllAsync(Arg.Any<PaginationFilter>(), Arg.Is<CustomerFilter>(x => x != null && x.Enabled));
+        await _customerService.Received(1).GetAllAsync(Arg.Is<PaginationFilter>(x => x != null),
+            Arg.Is<CustomerFilter>(x => x != null && x.Enabled));
         _mapper.Received(1).Map<CustomerFilter>(Arg.Any<CustomerQueryDto>());
         responseDto.Should().NotBeNull();
         responseDto.Should().BeEmpty();
     }
-    
+
     [Fact]
     public async Task GetAll_ShouldReceiveNullableCustomerFilter_WhenCustomerQueryDtoEnabledWasNull()
     {
@@ -167,7 +166,26 @@ public class CustomersControllerTest
         await _sut.GetAll(new PaginationQueryDto(), new CustomerQueryDto());
 
         // Assert
-        await _customerService.Received(1).GetAllAsync(Arg.Any<PaginationFilter>(), Arg.Is<CustomerFilter?>(x => x == null));
+        await _customerService.Received(1)
+            .GetAllAsync(Arg.Any<PaginationFilter>(), Arg.Is<CustomerFilter?>(x => x == null));
+    }
+
+    [Fact]
+    public async Task GetAll_ShouldReceiveNullablePaginationFilter_WhenPaginationQueryDtoDoesNotHavePageSize()
+    {
+        // Arrange
+        PaginationFilter paginationFilter = new();
+        PaginationQueryDto paginationQueryDto = new PaginationQueryDto();
+        List<Customer> customers = new();
+        _customerService.GetAllAsync(paginationFilter).Returns(customers);
+        _mapper.Map<PaginationFilter>(Arg.Any<PaginationQueryDto>()).Returns(paginationFilter);
+
+        // Act
+        await _sut.GetAll(paginationQueryDto, new CustomerQueryDto());
+
+        // Assert
+        await _customerService.Received(1)
+            .GetAllAsync(Arg.Is<PaginationFilter?>(x => x == null), Arg.Any<CustomerFilter>());
     }
 
     #endregion
@@ -236,7 +254,6 @@ public class CustomersControllerTest
         // Assert
         response.Should().BeAssignableTo<BadRequestResult>();
         await _customerService.DidNotReceive().CreateAsync(Arg.Any<Customer>());
-
     }
 
     [Fact]
@@ -299,7 +316,6 @@ public class CustomersControllerTest
         var responseDto = okObjectResult.Value.Should().BeAssignableTo<string>().Subject;
         responseDto.Should().Be("Could not convert response back");
         await _customerService.Received(1).CreateAsync(Arg.Is(customer));
-
     }
 
     #endregion
@@ -345,12 +361,7 @@ public class CustomersControllerTest
         var okObjectResult = response.Should().BeAssignableTo<OkObjectResult>().Subject;
         var responseDto = okObjectResult.Value.Should().BeAssignableTo<CustomerResponseDto>().Subject;
         responseDto.Should().NotBeNull();
-        responseDto.Id.Should().Be(customer.Id);
-        responseDto.FirstName.Should().Be(customer.FirstName);
-        responseDto.LastName.Should().Be(customer.LastName);
-        responseDto.Email.Should().Be(customer.Email);
-        responseDto.CreatedAt.Should().Be(customer.CreatedAt);
-        responseDto.UpdatedAt.Should().Be(customer.UpdatedAt);
+        responseDto.Should().BeEquivalentTo(customerRequestDto);
         await _customerService.Received(1).GetAsync(Arg.Is(customer.Id));
         await _customerService.Received(1).UpdateAsync(Arg.Is(customer));
     }
@@ -445,6 +456,7 @@ public class CustomersControllerTest
         // Arrange
         Guid id = Guid.NewGuid();
         _customerService.DeleteAsync(Arg.Any<Guid>()).Returns(1);
+        _customerService.ExistAsync(Arg.Any<Guid>()).Returns(true);
 
         // Act
         var response = await _sut.Delete(id);
@@ -452,14 +464,17 @@ public class CustomersControllerTest
         // Assert
         response.Should().BeAssignableTo<OkResult>();
         await _customerService.Received(1).DeleteAsync(Arg.Is(id));
+        await _customerService.Received(1).ExistAsync(Arg.Is(id));
     }
 
     [Fact]
-    public async Task Delete_ShouldNotFound_WhenNoCustomerWasDeleted()
+    public async Task Delete_ShouldReturnNotFound_WhenNoCustomerWasDeleted()
     {
         // Arrange
         Guid id = Guid.NewGuid();
         _customerService.DeleteAsync(Arg.Any<Guid>()).Returns(0);
+        _customerService.ExistAsync(Arg.Any<Guid>()).Returns(true);
+
 
         // Act
         var response = await _sut.Delete(id);
@@ -467,6 +482,27 @@ public class CustomersControllerTest
         // Assert
         response.Should().BeAssignableTo<NotFoundResult>();
         await _customerService.Received(1).DeleteAsync(id);
+        await _customerService.Received(1).ExistAsync(Arg.Is(id));
+
+    }
+    
+    [Fact]
+    public async Task Delete_ShouldReturnNotFound_WhenNoCustomerExist()
+    {
+        // Arrange
+        Guid id = Guid.NewGuid();
+        _customerService.DeleteAsync(Arg.Any<Guid>()).Returns(0);
+        _customerService.ExistAsync(Arg.Any<Guid>()).Returns(false);
+
+
+        // Act
+        var response = await _sut.Delete(id);
+
+        // Assert
+        response.Should().BeAssignableTo<NotFoundResult>();
+        await _customerService.Received(1).ExistAsync(Arg.Is(id));
+        await _customerService.DidNotReceive().DeleteAsync(id);
+
     }
 
     #endregion
