@@ -1,0 +1,243 @@
+{
+	"info": {
+		"_postman_id": "69b152a9-24c9-4296-96b1-208ffd607308",
+		"name": "Simple Customer Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12250969"
+	},
+	"item": [
+		{
+			"name": "Get All Customers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Customers With Pagination",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer?PageNumber=1&PageSize=10",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					],
+					"query": [
+						{
+							"key": "PageNumber",
+							"value": "1"
+						},
+						{
+							"key": "PageSize",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Customers Enabled Filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer?Enabled=false",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					],
+					"query": [
+						{
+							"key": "Enabled",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Customers Enabled Filter And Pagination",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer?PageNumber=2&PageSize=10&Enabled=false",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					],
+					"query": [
+						{
+							"key": "PageNumber",
+							"value": "2"
+						},
+						{
+							"key": "PageSize",
+							"value": "10"
+						},
+						{
+							"key": "Enabled",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customer by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer/0020302c-0fa5-4861-9282-dee687b958c6",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer",
+						"0020302c-0fa5-4861-9282-dee687b958c6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Customer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"firstName\": \"test first name\",\r\n    \"lastName\": \"test last name\",\r\n    \"email\": \"test@email.com\",\r\n    \"enabled\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Customer",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Customer Invalid Email",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"firstName\": \"test first name\",\r\n    \"lastName\": \"test last name\",\r\n    \"email\": \"invalid email here\",\r\n    \"enabled\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Customer",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Customer",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \r\n    \"firstName\": \"test first name\",\r\n    \"lastName\": \"test last name\",\r\n    \"email\": \"test@email.com\",\r\n    \"enabled\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/Customer/0020302c-0fa5-4861-9282-dee687b958c6",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer",
+						"0020302c-0fa5-4861-9282-dee687b958c6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Customer",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/Customer/0020302c-0fa5-4861-9282-dee687b958c6",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"Customer",
+						"0020302c-0fa5-4861-9282-dee687b958c6"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
