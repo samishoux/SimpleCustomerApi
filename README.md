@@ -24,5 +24,32 @@ docker compose up
 ````
 
 
+
+
+
 ## Docker hub image
 The docker image is available [here](https://hub.docker.com/r/samishoux/simplecustomerapi-api).
+
+
+## Running Tests
+#### Unit tests
+To run the unit tests you only need to run this command in the test folder:
+````shell
+dotnet test SimpleCustomerApi.Tests.Unit/
+````
+![passing unit tests](https://i.imgur.com/P7BVedb.png)
+
+#### Integration tests
+To run the integration tests, you will need to have images in your docker.
+````shell
+docker pull testcontainers/ryuk:0.3.4
+docker pull postgres:11.14
+````
+
+With these 2 images, the integration tests will be able to spin up docker container with postgresql to do its tests.<br>
+To run the integration tests you will need to run this command in the test folder:
+````shell
+dotnet test SimpleCustomerApi.Tests.Integration/
+````
+
+![passing integration tests](https://i.imgur.com/nZpMRyI.png)
